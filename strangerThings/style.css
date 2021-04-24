@@ -1,7 +1,27 @@
-/* #posts  {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+	padding: 1rem;
+}
+
+#posts  {
     display: flex;
+    flex-wrap: wrap;
+}
+
+/* .container {
 } */
 
 .card {
+    width: auto;
     margin: 10px;
+    align-content: space-between;
+}
+
+svg {
+    width: 50px;
 }
