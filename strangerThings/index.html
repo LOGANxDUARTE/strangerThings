@@ -19,45 +19,63 @@
 <body>
 
   <!--BOOTSTRAP HEADER  -->
-  <header>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">Random Stuff!</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Login
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">New User</a></li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Sign In</a></li>
-                <!-- <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li> -->
-              </ul>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Sign In</a>
             </li>
-            <!-- <li class="nav-item">
-                  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li> -->
+
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">New User</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" id="sellItem" href="#">Sell Item</a>
+              <!-- <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#submitPostModal">Sell Item</a> -->
+            </li>
+
           </ul>
-          <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-            <button class="btn btn-outline-success" type="submit">
-              Search
-            </button>
-          </form>
         </div>
       </div>
     </nav>
-  </header>
+ 
 
-<main>
+  <!-- SUBMIT A NEW POST FORM -->
+<div id="postTemplate"></div> 
+
+<!-- <div class="submit">
+  <h3>Sell something!</h3>
+  <form id="blog-post">
+    <div class="form-group">
+      <label class="mb-2" for="blog-title">Title</label>
+      <input class="form-control" id="blog-title" type="text" placeholder="What are you selling?" required />
+    </div>
+
+    <div class="form-group">
+      <label for="blog-description" class="mb-2">Item Description</label>
+      <textarea class="form-control" name="blog-description" id="blog-description" cols="30" rows="10"
+        placeholder="Tell us about it..." required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="blog-price" class="mb-2">Price</label>
+      <input type="text" class="form-control" id="blog-price" placeholder="How much do you want for it?" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+  </form>
+</div> -->
+
+  <!-- RENDER POSTS TO PAGE -->
+<div id="posts"></div>
 
 <!-- MODAL FOR LOGIN -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -93,9 +111,10 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Sign In</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Register New User</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+
       <div class="modal-body">
         <form>
           <div class="form-group">
@@ -103,10 +122,12 @@
             <input type="text" class="form-control" id="registerInputUsername" aria-describedby="usernameHelp"
               placeholder="Enter username" />
           </div>
+
           <div class="form-group">
             <label for="registerInputPassword">Password</label>
             <input type="password" class="form-control" id="registerInputPassword" placeholder="Password" />
           </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Register</button>
@@ -116,31 +137,41 @@
 </form>
 </div>
 
-<!-- RENDER POSTS TO PAGE -->
-<div id="posts"></div>
- 
-<!-- SUBMIT A NEW POST FORM -->
-  <h3>Submit Your Blog Entry</h3>
-  <form id="blog-post">
-    <div class="form-group">
-      <label class="mb-2" for="blog-title">Post Title</label>
-      <input class="form-control" id="blog-title" type="text" placeholder="What are you selling?" required />
+  <!-- MODAL FOR NEW POST
+  <div class="modal fade" id="submitPostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Sell Something!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="blog-title">Username</label>
+              <input type="text" class="form-control" id="blog-title" aria-describedby="usernameHelp"
+                placeholder="What are you selling?" />
+            </div>
+  
+            <div class="form-group">
+              <label for="blog-description">Description</label>
+              <input type="text" class="form-control" id="blog-description" placeholder="Tell us about it..." />
+            </div>
+  
+            <div class="form-group">
+              <label for="blog-price">Price</label>
+              <input type="text" class="form-control" id="blog-price" placeholder="How much?" />
+            </div>
+  
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label for="blog-description" class="mb-2">Item Description</label>
-      <textarea class="form-control" name="blog-description" id="blog-description" cols="30" rows="10"
-        placeholder="Tell us about it..." required></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="blog-price" class="mb-2">Price</label>
-      <input type="text" class="form-control" id="blog-price" placeholder="How much do you want for it?" required />
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Submit</button>
   </form>
-
-</main>
+  </div> -->
+ 
 </body>
 </html>

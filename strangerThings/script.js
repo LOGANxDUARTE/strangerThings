@@ -1,6 +1,12 @@
 const BASE_URL =
   "https://strangers-things.herokuapp.com/api/2102-CPU-RM-WEB-PT";
 
+// FUNCTION TO GRAB TOKEN FROM LOCAL STORAGE
+const fetchToken = () => {
+  const token = JSON.parse(localStorage.getItem("token"));
+  return token
+}
+
 // FUNCTION THAT FETCH ALL POSTS AVAILABLE
 function fetchPosts() {
   return fetch(`${BASE_URL}/posts`)
@@ -17,15 +23,16 @@ function fetchPosts() {
     });
 }
 
-// FUNCTION THAT RENDERS NEW POSTINGS
+// FUNCTION THAT RENDERS POSTINGS
 function renderPosts(posts, me) {
+  $("#posts").empty()
   posts.forEach(function (post) {
     const postElement = createPostHTML(post, me);
-    $("#posts").append(postElement);
+    $('#posts').append(postElement);
   });
 }
 
-// CREATE THE HTML FOR NEW POST
+// CREATE THE HTML FOR POST
 function createPostHTML(post, me) {
   return `<div class="container">
     <div class="card border-dark mb-3" style="max-width: 18rem;">
@@ -45,7 +52,70 @@ function createPostHTML(post, me) {
   `;
 }
 
-// FUNCTION TO REGISTER NEW USERS AND ALLOW POSTING
+// FUNCTION THAT RENDERS POSTING TEMPLATE
+function renderPostTemplate() {
+  const newPostListing = createPostTemplate();
+  $("#postTemplate").append(newPostListing)
+}
+
+// CREATE THE HTML FOR POSTING TEMPLATE
+function createPostTemplate() {
+  return `<div id="postForm" class="submit">
+  <h3>Sell something!</h3>
+  <form id="blog-post">
+    <div class="form-group">
+      <label class="mb-2" for="blog-title">Title</label>
+      <input class="form-control" id="blog-title" type="text" placeholder="What are you selling?" required />
+    </div>
+
+    <div class="form-group">
+      <label for="blog-description" class="mb-2">Item Description</label>
+      <textarea class="form-control" name="blog-description" id="blog-description" cols="30" rows="10"
+        placeholder="Tell us about it..." required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="blog-price" class="mb-2">Price</label>
+      <input type="text" class="form-control" id="blog-price" placeholder="How much do you want for it?" required />
+    </div>
+
+    <button id="newPostButton" type="button" class="btn btn-primary mt-3">Submit</button>
+  </form>
+</div>`
+}
+
+// CLICK HANDLER FOR DISPLAYING POST TEMPLATE
+$("#sellItem").on("click", (event) => {
+  console.log(event)
+  event.preventDefault();
+
+  renderPostTemplate();
+
+  // ON SUBMIT TO POST NEW POSTING TO PAGE
+  $("#newPostButton").on("click", async (e) => {
+    console.log('New post submit', e)
+    e.preventDefault();
+
+    const blogTitle = $("#blog-title").val();
+    const blogDescription = $("#blog-description").val();
+    const blogPrice = $("#blog-price").val();
+
+    const requestBody = {
+      post: {
+        title: blogTitle,
+        description: blogDescription,
+        price: blogPrice,
+      },
+    };
+
+    await postBlogEntry(requestBody);
+    $("#postForm").empty();
+    refreshPosts();
+  });
+
+});
+
+// FUNCTION TO REGISTER NEW USERS
 const registerUser = async (usernameValue, passwordValue) => {
   const url = `${BASE_URL}/users/register`;
   try {
@@ -136,12 +206,6 @@ const hideLoginModal = () => {
   }
 };
 
-// FUNCTION TO GRAB TOKEN FROM LOCAL STORAGE
-const fetchToken = () => {
-    const token = JSON.parse(localStorage.getItem("token"));
-    return token
-}
-
 // FUNCTION TO REQUEST TO POST A NEW POSTING
 const postBlogEntry = async (requestBody) => {
   const token = fetchToken();
@@ -151,38 +215,17 @@ const postBlogEntry = async (requestBody) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${ token }`
+        "Authorization": `Bearer ${ token }`
       },
       body: JSON.stringify(requestBody),
     });
     const newPost = await response.json()
     console.log(newPost)
-
     return newPost
   } catch (e) {
     console.error(e);
   }
 };
-
-// ON SUBMIT TO POST NEW POSTING TO PAGE
-$("#blog-post").on("submit", async (e) => {
-  e.preventDefault();
-
-  const blogTitle = $("#blog-title").val();
-  const blogDescription = $("#blog-description").val();
-  const blogPrice = $("#blog-price").val();
-
-  const requestBody = {
-    post: {
-      title: blogTitle,
-      description: blogDescription,
-      price: blogPrice,
-    },
-  };
-
-  await postBlogEntry(requestBody);
-  $("form").trigger("reset");
-});
 
 // GET THE LOGGED-IN USER DETAILS
 const fetchMe = async () => {
@@ -202,12 +245,13 @@ const fetchMe = async () => {
 
 // EDIT A POST MADE BY USER
 const editBlogEntry = async (requestBody, postId) => {
+  const token = fetchToken();
 	try {
 		const request = await fetch(`${BASE_URL}/posts/${postId}`, {
 			method: "PATCH", 
 			headers: {
 				"Content-Type": "application/json",
-				"Authorization": "Bearer " + JSON.parse(localStorage.getItem("token"))
+        "Authorization":`Bearer ${token}`
 			},
 			body: JSON.stringify(requestBody),
 		})
@@ -231,11 +275,14 @@ const deleteBlogEntry = async (postId) => {
 	}
 }
 
-// CALL EVERYTHING
-(async () => {
+async function refreshPosts() {
   const posts = await fetchPosts();
   const me = await fetchMe();
   renderPosts(posts, me);
+}
 
+// CALL EVERYTHING
+(async () => {
+  await refreshPosts()
 })();
 
