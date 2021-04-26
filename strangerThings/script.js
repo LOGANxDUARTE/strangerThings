@@ -8,88 +8,72 @@ const fetchToken = () => {
 }
 
 // FUNCTION THAT FETCH ALL POSTS AVAILABLE
-function fetchPosts() {
-  return fetch(`${BASE_URL}/posts`)
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      // return data
-      console.log(data);
-      return data.data.posts;
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+async function fetchPosts() {
+  try {
+    const response = await fetch(`${BASE_URL}/posts`);
+    const data = await response.json();
+    // return data
+    console.log(data);
+    return data.data.posts;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // FUNCTION THAT RENDERS POSTINGS
 function renderPosts(posts, me) {
-  $("#posts").empty()
+  $("#posts").empty();
   posts.forEach(function (post) {
     const postElement = createPostHTML(post, me);
-    $('#posts').append(postElement);
+    $('#posts').prepend(postElement);
   });
 }
 
 // CREATE THE HTML FOR POST
 function createPostHTML(post, me) {
-  return `<div class="container">
-    <div class="card border-dark mb-3" style="max-width: 18rem;">
-    <div class="card-header"><strong>${post.title}</strong></div>
+  return `
+  <div class="card border-dark mb-3" style="min-width: 20rem; max-width: 20rem;">
+  <div class="card-header">
+    <span>@${post.author.username}</span>
+  </div>
   <div class="card-body">
+    <h5 class="card-title">${post.title}<span id="thePrice">${post.price}</span></h5>
     <p class="card-text">${post.description}</p>
-    <p class="card-text">${post.price}</p>
-    <p class="card-text"><strong>Will I deliver?</strong> ${post.willDeliver}</p>
-    <a href="#" class="btn btn-dark">More info</a>
+    <p class="card-text"><em>Do they Deliver?</em><br>${post.willDeliver}</p>
+    <a href="#" id="postButton"class="btn btn-dark">Go somewhere</a>
     ${ me._id === post.author._id ?
       `<svg class="svg-icon" viewBox="0 0 20 20">
-          <path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"></path>
+      <path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"></path>
       </svg>`: ''}
   </div>
 </div>
-</div>
-  `;
+  `
 }
 
 // FUNCTION THAT RENDERS POSTING TEMPLATE
 function renderPostTemplate() {
   const newPostListing = createPostTemplate();
+
   $("#postTemplate").append(newPostListing)
 }
 
-// CREATE THE HTML FOR POSTING TEMPLATE
-function createPostTemplate() {
-  return `<div id="postForm" class="submit">
-  <h3>Sell something!</h3>
-  <form id="blog-post">
-    <div class="form-group">
-      <label class="mb-2" for="blog-title">Title</label>
-      <input class="form-control" id="blog-title" type="text" placeholder="What are you selling?" required />
-    </div>
-
-    <div class="form-group">
-      <label for="blog-description" class="mb-2">Item Description</label>
-      <textarea class="form-control" name="blog-description" id="blog-description" cols="30" rows="10"
-        placeholder="Tell us about it..." required></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="blog-price" class="mb-2">Price</label>
-      <input type="text" class="form-control" id="blog-price" placeholder="How much do you want for it?" required />
-    </div>
-
-    <button id="newPostButton" type="button" class="btn btn-primary mt-3">Submit</button>
-  </form>
-</div>`
+// FUNCTION TO TOGGLE FORM VISIBILITY
+function toggleForm() {
+  let formStatus = document.getElementById("postForm");
+  if (formStatus.style.display === "block") {
+    formStatus.style.display = "none";
+  } else {
+    formStatus.style.display = "block";
+  }
 }
 
 // CLICK HANDLER FOR DISPLAYING POST TEMPLATE
 $("#sellItem").on("click", (event) => {
-  console.log(event)
+  console.log('sell item was clicked', event)
   event.preventDefault();
+  toggleForm();
 
-  renderPostTemplate();
+});
 
   // ON SUBMIT TO POST NEW POSTING TO PAGE
   $("#newPostButton").on("click", async (e) => {
@@ -109,11 +93,9 @@ $("#sellItem").on("click", (event) => {
     };
 
     await postBlogEntry(requestBody);
-    $("#postForm").empty();
+    toggleForm();
     refreshPosts();
   });
-
-});
 
 // FUNCTION TO REGISTER NEW USERS
 const registerUser = async (usernameValue, passwordValue) => {
@@ -141,6 +123,24 @@ const registerUser = async (usernameValue, passwordValue) => {
   }
 };
 
+// HIDE SIGN IN AND NEW USER OPTIONS
+const updateHeader = () => {
+  const token = fetchToken();
+  if(token) {
+    $('.hideMe').empty();
+    $('.signOut').css("display: content;")
+  }
+}
+
+// CLICK HANDLER FOR SIGN OUT CONFIRMATION 
+$(".signOut").on("click", (event) => {
+  console.log('sign out was clicked', event)
+  localStorage.removeItem('token');
+  $('.signOut').remove();
+  refreshPosts();
+});
+
+
 // ON SUBMIT TO REGISTER USER
 $(".modal-body form").on("submit", (event) => {
   event.preventDefault();
@@ -155,6 +155,7 @@ const hideRegistrationModal = () => {
   const token = localStorage.getItem("token");
   if (token) {
     $("#registerModal").modal("hide");
+    refreshPosts();
   } else {
     console.log("nothing to hide");
   }
@@ -201,6 +202,7 @@ const hideLoginModal = () => {
   const token = localStorage.getItem("token");
   if (token) {
     $("#loginModal").modal("hide");
+    refreshPosts();
   } else {
     console.log("nothing to hide");
   }
@@ -278,6 +280,7 @@ const deleteBlogEntry = async (postId) => {
 async function refreshPosts() {
   const posts = await fetchPosts();
   const me = await fetchMe();
+  updateHeader();
   renderPosts(posts, me);
 }
 
@@ -285,4 +288,3 @@ async function refreshPosts() {
 (async () => {
   await refreshPosts()
 })();
-

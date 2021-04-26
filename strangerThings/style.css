@@ -10,18 +10,35 @@ html, body {
 
 #posts  {
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
 }
 
-/* .container {
-} */
+#thePrice {
+    color: green;
+    float: right;
+}
+
 
 .card {
+    display: flex;
     width: auto;
     margin: 10px;
     align-content: space-between;
 }
 
+#postButton {
+    justify-content: end;
+}
+
 svg {
     width: 50px;
+}
+
+#postForm {
+    display: none;
+}
+
+.nav-link .signOut {
+    display: none;
 }
